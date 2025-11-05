@@ -36,7 +36,7 @@ portfolio-website/
 
 ### [Canteen Platform]
 ![Tech Stack](https://img.shields.io/badge/Tech_Stack-React,Node.js,MySQL-blue)
-**Deskripsi:** Aplikasi web untuk [jelaskan fungsi proyek]. Fitur utama termasuk [sebutkan 2-3 fitur utama].
+**Deskripsi:** Aplikasi web untuk pemesanan makanan karyawan. Fitur utama termasuk order makan dan penukaran sembako.
 - **📂 Source Code:** [GitHub Repository](https://github.com/andriscreen/paracanteen2)
 
 
