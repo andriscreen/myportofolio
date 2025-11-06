@@ -1,9 +1,91 @@
+
+<?php
+// PHPMailer Configuration
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
+$show_popup = false;
+$popup_status = '';
+$popup_message = '';
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Include PHPMailer files
+    require 'PHPMailer/src/Exception.php';
+    require 'PHPMailer/src/PHPMailer.php';
+    require 'PHPMailer/src/SMTP.php';
+    
+    $name = htmlspecialchars($_POST['name']);
+    $email = htmlspecialchars($_POST['email']);
+    $subject = htmlspecialchars($_POST['subject']);
+    $message = htmlspecialchars($_POST['message']);
+    
+    $mail = new PHPMailer(true);
+    
+    try {
+        // Server settings for Gmail
+        $mail->isSMTP();
+        $mail->Host = 'smtp.gmail.com';
+        $mail->SMTPAuth = true;
+        $mail->Username = 'gantengresult@gmail.com'; // Your Gmail
+        $mail->Password = 'hqvnqqcxkdrwelqe';     // App Password (bukan password biasa)
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+        $mail->Port = 587;
+        
+        // Recipients
+        $mail->setFrom('gantengresult@gmail.com', 'Portfolio Website');
+        $mail->addAddress('gantengresult@gmail.com', 'Andri'); // Send to yourself
+        $mail->addReplyTo($email, $name); // Reply to sender
+        
+        // Content
+        $mail->isHTML(true);
+        $mail->Subject = "Portfolio Contact: $subject";
+        $mail->Body = "
+        <h2>Pesan Baru dari Portfolio Website</h2>
+        <p><strong>Nama:</strong> $name</p>
+        <p><strong>Email:</strong> $email</p>
+        <p><strong>Subjek:</strong> $subject</p>
+        <p><strong>Pesan:</strong></p>
+        <p>$message</p>
+        <hr>
+        <p><small>Dikirim dari website portfolio Andri Irawan</small></p>
+        ";
+        
+        // Plain text version
+        $mail->AltBody = "
+        Pesan Baru dari Portfolio Website
+        
+        Nama: $name
+        Email: $email
+        Subjek: $subject
+        
+        Pesan:
+        $message
+        
+        ---
+        Dikirim dari website portfolio Andri Irawan
+        ";
+        
+        $mail->send();
+        $show_popup = true;
+        $popup_status = "success";
+        $popup_message = "Pesan berhasil dikirim! 🎉 Saya akan membalas segera.";
+        
+    } catch (Exception $e) {
+        $show_popup = true;
+        $popup_status = "error";
+        $popup_message = "Maaf, pesan gagal dikirim. Silakan hubungi langsung ke hi@andriirawan.com";
+        
+        // Untuk debugging, bisa tampilkan error detail:
+        // $popup_message = "Error: " . $e->getMessage();
+    }
+}
+?>
 <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portofolio Web Developer</title>
+    <title>Portofolio Andri Irawan</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
@@ -33,7 +115,7 @@
     <header class="header">
         <nav class="nav container">
             <div class="nav-logo">
-                <span class="logo-text">Dev<span class="logo-accent">Port</span></span>
+                <span class="logo-text">Dev<span class="logo-accent">Kentang</span></span>
             </div>
             <div class="nav-menu" id="nav-menu">
                 <ul class="nav-list">
@@ -283,15 +365,14 @@
                             </div>
                         </div>
                         <div class="project-content">
-                            <h3 class="project-title">E-Commerce Platform</h3>
+                            <h3 class="project-title">Canteen Platform</h3>
                             <p class="project-description">
-                                Platform e-commerce modern dengan sistem pembayaran terintegrasi dan dashboard admin yang powerful.
+                                Platform meal schedule modern dengan sistem MVC dan dashboard admin yang powerful.
                             </p>
                             <div class="project-tech">
-                                <span>React</span>
+                                <span>Bootstrap</span>
                                 <span>Node.js</span>
-                                <span>MongoDB</span>
-                                <span>Stripe</span>
+                                <span>MySQL</span>
                             </div>
                         </div>
                     </div>
@@ -360,7 +441,7 @@
                 </div>
                 
                 <div class="projects-cta">
-                    <a href="#" class="btn btn-outline">
+                    <a href="https://github.com/andriscreen/" class="btn btn-outline">
                         <span>Lihat Semua Proyek</span>
                         <i class="fab fa-github"></i>
                     </a>
@@ -393,7 +474,7 @@
                                 <i class="fas fa-phone"></i>
                             </div>
                             <div class="contact-details">
-                                <h3>Telepon</h3>
+                                <h3>Whatsapp</h3>
                                 <p>+62 812 9276 1191</p>
                             </div>
                         </div>
@@ -426,21 +507,27 @@
                 </div>
                 
                 <div class="contact-form">
-                    <form class="form">
+                    <?php if (isset($status)): ?>
+                        <div class="form-status <?php echo $status; ?>">
+                            <?php echo $message_status; ?>
+                        </div>
+                    <?php endif; ?>
+                    
+                    <form class="form" method="POST" action="">
                         <div class="form-group">
-                            <input type="text" class="form-input" placeholder="Nama lengkap kamu" required>
+                            <input type="text" name="name" class="form-input" placeholder="Nama lengkap kamu" required>
                         </div>
                         
                         <div class="form-group">
-                            <input type="email" class="form-input" placeholder="Email aktif kamu" required>
+                            <input type="email" name="email" class="form-input" placeholder="Email aktif kamu" required>
                         </div>
                         
                         <div class="form-group">
-                            <input type="text" class="form-input" placeholder="Subjek pesan" required>
+                            <input type="text" name="subject" class="form-input" placeholder="Subjek pesan" required>
                         </div>
                         
                         <div class="form-group">
-                            <textarea class="form-input form-textarea" placeholder="Ceritain project atau ide yang kamu punya..." required></textarea>
+                            <textarea name="message" class="form-input form-textarea" placeholder="Ceritain project atau ide yang kamu punya..." required></textarea>
                         </div>
                         
                         <button type="submit" class="btn btn-primary btn-full">
@@ -458,7 +545,7 @@
         <div class="footer-container container">
             <div class="footer-content">
                 <div class="footer-logo">
-                    <span class="logo-text">Dev<span class="logo-accent">Port</span></span>
+                    <span class="logo-text">Dev<span class="logo-accent">Kentang</span></span>
                     <p>Full Stack Web Developer</p>
                 </div>
                 
@@ -490,7 +577,7 @@
             </div>
             
             <div class="footer-bottom">
-                <p>&copy; 2024 DevPort. Dibuat dengan <i class="fas fa-heart"></i> dan banyak <i class="fas fa-coffee"></i></p>
+                <p>&copy; 2024 DevKentang. Dibuat dengan <i class="fas fa-heart"></i> dan banyak <i class="fas fa-coffee"></i></p>
             </div>
         </div>
     </footer>

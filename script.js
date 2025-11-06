@@ -201,4 +201,36 @@ document.addEventListener('DOMContentLoaded', () => {
             element.style.transform = 'translateY(0)';
         }, index * 200);
     });
+    // Popup Functions
+    function closePopup() {
+        const popup = document.getElementById('notification-popup');
+        popup.classList.remove('active');
+        
+        // Reset form setelah popup ditutup (jika success)
+        if (popup.classList.contains('success')) {
+            document.querySelector('.contact-form form').reset();
+        }
+    }
+
+    // Close popup dengan ESC key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closePopup();
+        }
+    });
+
+    // Auto close popup setelah 5 detik (optional)
+    function autoClosePopup() {
+        const popup = document.getElementById('notification-popup');
+        if (popup.classList.contains('active')) {
+            setTimeout(() => {
+                closePopup();
+            }, 5000);
+        }
+    }
+
+    // Panggil auto close jika popup aktif
+    document.addEventListener('DOMContentLoaded', function() {
+        autoClosePopup();
+    });
 });
